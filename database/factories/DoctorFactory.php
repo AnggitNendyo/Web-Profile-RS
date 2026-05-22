@@ -1,0 +1,34 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Doctor;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<Doctor>
+ */
+class DoctorFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $specialty = \App\Models\Specialty::inRandomOrder()->first() ?? \App\Models\Specialty::factory()->create();
+        return [
+            'name' => 'dr. ' . $this->faker->name(),
+            'title' => 'Sp.' . strtoupper($this->faker->lexify('??')),
+            'specialty_id' => $specialty->id,
+            'education' => [
+                ['degree' => 'S1 Kedokteran', 'institution' => 'Universitas Indonesia', 'year' => $this->faker->numberBetween(2000, 2010)],
+                ['degree' => 'Spesialis', 'institution' => 'Universitas Gadjah Mada', 'year' => $this->faker->numberBetween(2011, 2020)],
+            ],
+            'experience_years' => $this->faker->numberBetween(1, 30),
+            'photo_path' => null,
+            'is_active' => $this->faker->boolean(90),
+        ];
+    }
+}
