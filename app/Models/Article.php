@@ -38,12 +38,6 @@ class Article extends Model
     {
         return $query->whereNotNull('published_at')->where('published_at', '<=', now());
     }
-    
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
-
     /**
      * Calculate reading time in minutes based on word count.
      * Average reading speed: ~200 words per minute.

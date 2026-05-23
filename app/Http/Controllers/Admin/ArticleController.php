@@ -19,7 +19,7 @@ class ArticleController extends Controller
                     ->orWhere('content', 'ilike', "%{$search}%")
                     ->orWhereHas('author', fn($q) => $q->where('name', 'ilike', "%{$search}%"));
             })
-            ->latest()
+            ->orderByRaw('published_at IS NOT NULL ASC, published_at DESC')
             ->paginate(10)
             ->withQueryString();
         

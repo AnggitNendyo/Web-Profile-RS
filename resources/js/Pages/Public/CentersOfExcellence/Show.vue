@@ -81,7 +81,7 @@ onUnmounted(() => {
 <template>
     <Head :title="centerOfExcellence.data.title" />
     <PublicLayout>
-        <div class="bg-gray-50 pb-16 min-h-screen">
+        <div class="bg-gray-50 pb-16 min-h-screen w-full overflow-x-hidden">
             <!-- Hero Image -->
             <div class="relative h-72 md:h-[32rem] bg-gray-900 overflow-hidden">
                 <div class="w-full h-full relative">
@@ -109,7 +109,7 @@ onUnmounted(() => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+                        <div class="bg-white rounded-xl shadow-sm p-5 sm:p-8 border border-gray-100">
                             <h2 class="text-2xl font-bold text-gray-900 mb-6">Tentang Layanan</h2>
                             <div class="prose prose-indigo prose-lg max-w-none text-gray-600 mb-8" v-html="centerOfExcellence.data.full_content"></div>
                             
@@ -139,7 +139,7 @@ onUnmounted(() => {
                             <div class="mt-8" v-if="centerOfExcellence.data.technology_used && centerOfExcellence.data.technology_used.length > 0">
                                 <h3 class="text-2xl font-bold text-gray-900 mb-6">Fasilitas & Teknologi Modern</h3>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div v-for="(tech, index) in centerOfExcellence.data.technology_used" :key="index" class="bg-gray-50 hover:bg-indigo-50 rounded-2xl p-6 border border-gray-100 transition-colors duration-300 group">
+                                    <div v-for="(tech, index) in centerOfExcellence.data.technology_used" :key="index" class="bg-gray-50 hover:bg-indigo-50 rounded-2xl p-5 border border-gray-100 transition-colors duration-300 group">
                                         <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-indigo-500 mb-4 group-hover:scale-110 transition-transform">
                                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                                         </div>
@@ -153,7 +153,7 @@ onUnmounted(() => {
                     
                     <div class="lg:col-span-1 space-y-8">
                         <!-- Informasi Pendaftaran -->
-                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 sticky top-28">
+                        <div class="bg-white rounded-xl shadow-sm p-5 sm:p-6 border border-gray-100 sticky top-28">
                             <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
                                 <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 Informasi Pendaftaran
@@ -187,7 +187,7 @@ onUnmounted(() => {
 
             <!-- Horizontal Layanan Lainnya Section -->
             <div v-if="otherCoes.data && otherCoes.data.length > 0" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
-                <div class="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+                <div class="bg-white rounded-xl shadow-sm p-5 sm:p-8 border border-gray-100">
                     <div class="flex items-center justify-between mb-8 border-b pb-4">
                         <h3 class="text-2xl font-bold text-gray-900">Jelajahi Layanan Unggulan Lainnya</h3>
                         <Link :href="route('coes.index')" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">Lihat Semua &rarr;</Link>

@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import RichTextEditor from '@/Components/RichTextEditor.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     article: {
@@ -29,15 +29,43 @@ const showPreview = ref(false);
 const showSeoFields = ref(false);
 const coverPreview = ref(props.article.cover_image || '');
 
+const formatForInput = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
 const form = useForm({
     title: props.article.title || '',
     content: props.article.content || '',
-    published_at: props.article.published_at ? props.article.published_at.split(' ')[0] : '',
+    published_at: formatForInput(props.article.published_at),
     cover_image: props.article.cover_image || '',
     excerpt: props.article.excerpt || '',
     category_id: props.article.category_id || '',
     meta_title: props.article.meta_title || '',
     meta_description: props.article.meta_description || '',
+});
+
+const status = ref(form.published_at ? 'public' : 'draft');
+
+watch(status, (newStatus) => {
+    if (newStatus === 'draft') {
+        form.published_at = '';
+    } else if (newStatus === 'public' && !form.published_at) {
+        const d = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        form.published_at = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+});
+
+watch(() => form.published_at, (newDate) => {
+    if (newDate && status.value === 'draft') {
+        status.value = 'public';
+    } else if (!newDate && status.value === 'public') {
+        status.value = 'draft';
+    }
 });
 
 // Cover image handling
@@ -258,23 +286,24 @@ const createCategory = async () => {
                                     </h3>
                                 </div>
                                 <div class="p-6 space-y-4">
-                                    <!-- Status badge -->
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-600">Status:</span>
-                                        <span v-if="form.published_at" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
-                                            Published
-                                        </span>
-                                        <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
-                                            Draft
-                                        </span>
+                                    <!-- Status Radio Buttons -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Status Artikel</label>
+                                        <div class="flex items-center gap-6 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                            <label class="flex items-center cursor-pointer group">
+                                                <input type="radio" v-model="status" value="draft" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                                                <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">Draft</span>
+                                            </label>
+                                            <label class="flex items-center cursor-pointer group">
+                                                <input type="radio" v-model="status" value="public" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                                                <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">Public</span>
+                                            </label>
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <label for="published_at" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Publish</label>
-                                        <input type="date" id="published_at" v-model="form.published_at" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                        <p class="text-xs text-gray-400 mt-1">Kosongkan untuk menyimpan sebagai draft</p>
+                                    <div v-show="status === 'public'" class="animate-fade-in-up">
+                                        <label for="published_at" class="block text-sm font-medium text-gray-700 mb-1">Pilih Waktu Publikasi</label>
+                                        <input type="datetime-local" id="published_at" v-model="form.published_at" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                         <div v-if="form.errors.published_at" class="text-red-500 text-xs mt-1">{{ form.errors.published_at }}</div>
                                     </div>
 
