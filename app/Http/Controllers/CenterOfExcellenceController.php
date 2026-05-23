@@ -20,8 +20,14 @@ class CenterOfExcellenceController extends Controller
 
     public function show(CenterOfExcellence $centerOfExcellence)
     {
+        $otherCoes = CenterOfExcellence::where('id', '!=', $centerOfExcellence->id)
+            ->latest()
+            ->take(4)
+            ->get();
+
         return Inertia::render('Public/CentersOfExcellence/Show', [
-            'centerOfExcellence' => new CenterOfExcellenceResource($centerOfExcellence)
+            'centerOfExcellence' => new CenterOfExcellenceResource($centerOfExcellence),
+            'otherCoes' => CenterOfExcellenceResource::collection($otherCoes)
         ]);
     }
 }

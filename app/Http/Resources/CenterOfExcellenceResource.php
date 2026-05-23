@@ -21,6 +21,9 @@ class CenterOfExcellenceResource extends JsonResource
             'full_content' => $this->full_content,
             'technology_used' => $this->technology_used,
             'slug' => $this->slug,
+            'slider_images' => $this->slider_images,
+            'show_slider' => $this->show_slider,
+            'banner_image' => $this->banner_image,
         ];
     }
 }
