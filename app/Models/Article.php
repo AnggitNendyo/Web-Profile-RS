@@ -16,10 +16,12 @@ class Article extends Model
         'title', 'slug', 'content', 'author_id', 'published_at',
         'cover_image', 'excerpt', 'category_id',
         'meta_title', 'meta_description',
+        'is_promo', 'price', 'promo_price',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
+        'is_promo' => 'boolean',
     ];
 
     protected $appends = ['reading_time'];

@@ -23,6 +23,13 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
+        $this->call([
+            MasterDataSeeder::class,
+            ArticleSeeder::class,
+            InsurancePartnerSeeder::class,
+            JobVacancySeeder::class,
+        ]);
+
         // Specialties
         $specialties = [
             'Kardiologi (Jantung)', 'Neurologi (Saraf)', 'Ortopedi (Tulang)', 
@@ -53,7 +60,7 @@ class DatabaseSeeder extends Seeder
         // Facilities
         Facility::factory(12)->create();
 
-        // Articles
-        Article::factory(10)->create();
+        // Articles & Promos
+        // Handled at the top array call
     }
 }

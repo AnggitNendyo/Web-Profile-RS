@@ -9,12 +9,39 @@ const isMobileMenuOpen = ref(false);
 
 const navLinks = [
     { name: 'Beranda', routeName: 'home' },
-    { name: 'Cari Dokter', routeName: 'doctors.index' },
-    { name: 'Layanan Unggulan', routeName: 'coes.index' },
-    { name: 'Fasilitas', routeName: 'facilities.index' },
-    { name: 'Panduan Pasien', routeName: 'pages.show', routeParams: { page: 'panduan-pasien' } },
+    { 
+        name: 'Profil & Layanan', 
+        isDropdown: true,
+        activeMatch: ['facilities.', 'coes.', 'insurance-partners.'],
+        items: [
+            { name: 'Fasilitas & Teknologi', routeName: 'facilities.index' },
+            { name: 'Layanan Unggulan', routeName: 'coes.index' },
+            { name: 'Mitra Asuransi', routeName: 'insurance-partners.index' },
+        ]
+    },
+    { 
+        name: 'Informasi Pasien', 
+        isDropdown: true,
+        activeMatch: ['doctors.', 'packages.', 'pages.'],
+        items: [
+            { name: 'Cari Dokter', routeName: 'doctors.index' },
+            { name: 'Paket & Promo', routeName: 'packages.index' },
+            { name: 'Panduan Pasien', routeName: 'pages.show', routeParams: { page: 'panduan-pasien' } },
+        ]
+    },
     { name: 'Artikel', routeName: 'articles.index' },
 ];
+
+const isRouteActive = (link) => {
+    if (link.routeName) {
+        if (link.routeName === 'home') return route().current('home');
+        return route().current(link.routeName) || route().current(link.routeName.split('.')[0] + '.*');
+    }
+    if (link.isDropdown && link.activeMatch) {
+        return link.activeMatch.some(match => route().current(match + '*'));
+    }
+    return false;
+};
 </script>
 
 <template>
@@ -54,11 +81,34 @@ const navLinks = [
 
                     <!-- Desktop Menu -->
                     <div class="hidden lg:flex items-center space-x-6">
-                        <Link v-for="link in navLinks" :key="link.name" :href="route(link.routeName, link.routeParams || {})" 
-                            class="text-sm font-medium transition-colors"
-                            :class="route().current(link.routeName) || (link.routeName !== 'home' && route().current(link.routeName.split('.')[0] + '.*')) ? 'text-primary border-b-2 border-primary py-7' : 'text-gray-600 hover:text-primary py-7'">
-                            {{ link.name }}
-                        </Link>
+                        <template v-for="link in navLinks" :key="link.name">
+                            <!-- Regular Link -->
+                            <Link v-if="!link.isDropdown" :href="route(link.routeName, link.routeParams || {})" 
+                                class="text-sm font-medium transition-colors"
+                                :class="isRouteActive(link) ? 'text-primary border-b-2 border-primary py-7' : 'text-gray-600 hover:text-primary py-7'">
+                                {{ link.name }}
+                            </Link>
+
+                            <!-- Dropdown Menu -->
+                            <div v-else class="relative group h-full flex items-center">
+                                <button class="text-sm font-medium transition-colors flex items-center py-7"
+                                    :class="isRouteActive(link) ? 'text-primary border-b-2 border-primary' : 'text-gray-600 hover:text-primary'">
+                                    {{ link.name }}
+                                    <svg class="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                
+                                <div class="absolute top-[76px] left-0 w-56 bg-white rounded-b-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 z-50">
+                                    <div class="py-2">
+                                        <Link v-for="item in link.items" :key="item.name" 
+                                            :href="route(item.routeName, item.routeParams || {})"
+                                            class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/5 hover:text-primary transition-colors"
+                                            :class="{'bg-primary/5 text-primary font-semibold': isRouteActive(item)}">
+                                            {{ item.name }}
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                         <Link :href="route('login')" class="ml-4 px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-secondary transition-colors shadow-sm">
                             Portal Pasien
                         </Link>
@@ -77,14 +127,33 @@ const navLinks = [
             </div>
 
             <!-- Mobile Menu -->
-            <div v-show="isMobileMenuOpen" class="lg:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full left-0 z-40">
+            <div v-show="isMobileMenuOpen" class="lg:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full left-0 z-40 max-h-[80vh] overflow-y-auto">
                 <div class="px-2 pt-2 pb-3 space-y-1">
-                    <Link v-for="link in navLinks" :key="link.name" :href="route(link.routeName, link.routeParams || {})"
-                        @click="isMobileMenuOpen = false"
-                        class="block px-3 py-2 rounded-md text-base font-medium"
-                        :class="route().current(link.routeName) || (link.routeName !== 'home' && route().current(link.routeName.split('.')[0] + '.*')) ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-50 hover:text-primary'">
-                        {{ link.name }}
-                    </Link>
+                    <template v-for="link in navLinks" :key="link.name">
+                        <!-- Regular Link -->
+                        <Link v-if="!link.isDropdown" :href="route(link.routeName, link.routeParams || {})"
+                            @click="isMobileMenuOpen = false"
+                            class="block px-3 py-2 rounded-md text-base font-medium"
+                            :class="isRouteActive(link) ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-50 hover:text-primary'">
+                            {{ link.name }}
+                        </Link>
+                        
+                        <!-- Dropdown Header (Mobile) -->
+                        <div v-else class="space-y-1">
+                            <div class="px-3 py-2 text-base font-bold text-gray-900 bg-gray-50/50 rounded-md">
+                                {{ link.name }}
+                            </div>
+                            <div class="pl-4 space-y-1 border-l-2 border-gray-100 ml-3">
+                                <Link v-for="item in link.items" :key="item.name" 
+                                    :href="route(item.routeName, item.routeParams || {})"
+                                    @click="isMobileMenuOpen = false"
+                                    class="block px-3 py-2 rounded-md text-sm font-medium"
+                                    :class="isRouteActive(item) ? 'text-primary font-bold' : 'text-gray-600 hover:bg-gray-50 hover:text-primary'">
+                                    {{ item.name }}
+                                </Link>
+                            </div>
+                        </div>
+                    </template>
                     <Link :href="route('login')" class="block w-full text-center mt-4 px-3 py-3 rounded-md text-base font-medium bg-primary text-white hover:bg-secondary">
                         Portal Pasien
                     </Link>
@@ -123,10 +192,10 @@ const navLinks = [
                     <div>
                         <h3 class="text-sm font-semibold text-gray-200 tracking-wider uppercase mb-4">Informasi Pasien</h3>
                         <ul class="space-y-2 text-sm text-gray-400">
-                            <li><Link :href="route('pages.show', 'panduan-pasien')" class="hover:text-white transition">Panduan Pasien</Link></li>
-                            <li><Link :href="route('pages.show', 'hak-dan-kewajiban-pasien')" class="hover:text-white transition">Hak & Kewajiban Pasien</Link></li>
-                            <li><Link :href="route('pages.show', 'jadwal-dokter')" class="hover:text-white transition">Jadwal Dokter</Link></li>
-                            <li><Link :href="route('pages.show', 'karir')" class="hover:text-white transition">Karir</Link></li>
+                            <li><Link :href="route('pages.show', { page: 'panduan-pasien' })" class="hover:text-white transition">Panduan Pasien</Link></li>
+                            <li><Link :href="route('pages.show', { page: 'hak-dan-kewajiban-pasien' })" class="hover:text-white transition">Hak & Kewajiban Pasien</Link></li>
+                            <li><Link :href="route('doctors.index')" class="hover:text-white transition">Jadwal Dokter</Link></li>
+                            <li><Link :href="route('careers.index')" class="hover:text-white transition">Karir</Link></li>
                         </ul>
                     </div>
 

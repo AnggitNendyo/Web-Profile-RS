@@ -17,19 +17,31 @@ const userInitials = computed(() => {
 const navItems = [
     { label: 'Dashboard', route: 'dashboard', icon: 'dashboard', match: 'dashboard' },
     { label: 'Dokter', route: 'admin.doctors.index', icon: 'doctors', match: 'admin.doctors.*' },
-    { label: 'Artikel', route: 'admin.articles.index', icon: 'articles', match: 'admin.articles.*' },
     { label: 'Layanan Unggulan', route: 'admin.coes.index', icon: 'coes', match: 'admin.coes.*' },
     { label: 'Fasilitas', route: 'admin.facilities.index', icon: 'facilities', match: 'admin.facilities.*' },
 ];
 
+const kontenItems = [
+    { label: 'Artikel & Berita', route: 'admin.articles.index', match: 'admin.articles.*' },
+    { label: 'Promo & Paket', route: 'admin.promos.index', match: 'admin.promos.*' },
+];
+
 const masterItems = [
-    { label: 'Halaman', route: 'admin.pages.index', icon: 'pages', match: 'admin.pages.*' },
+    { label: 'Kategori Artikel', route: 'admin.article-categories.index', match: 'admin.article-categories.*' },
+    { label: 'Kategori Fasilitas', route: 'admin.facility-categories.index', match: 'admin.facility-categories.*' },
     { label: 'Spesialisasi', route: 'admin.specialties.index', match: 'admin.specialties.*' },
     { label: 'Gelar Dokter', route: 'admin.degrees.index', match: 'admin.degrees.*' },
+    { label: 'Mitra Asuransi', route: 'admin.insurance-partners.index', match: 'admin.insurance-partners.*' },
+    { label: 'Lowongan Karir', route: 'admin.job-vacancies.index', match: 'admin.job-vacancies.*' },
+    { label: 'Halaman Statis', route: 'admin.pages.index', icon: 'pages', match: 'admin.pages.*' },
 ];
 
 const isMasterActive = computed(() => {
     return masterItems.some(item => route().current(item.match));
+});
+
+const isKontenActive = computed(() => {
+    return kontenItems.some(item => route().current(item.match));
 });
 </script>
 
@@ -69,6 +81,37 @@ const isMasterActive = computed(() => {
                                 >
                                     {{ item.label }}
                                 </Link>
+
+                                <!-- Konten Dropdown -->
+                                <div class="relative">
+                                    <Dropdown align="left" width="48" content-classes="py-1 bg-white/95 backdrop-blur-xl border border-gray-200/60">
+                                        <template #trigger>
+                                            <button
+                                                type="button"
+                                                class="navbar-link inline-flex items-center gap-1"
+                                                :class="{ 'navbar-link--active': isKontenActive }"
+                                            >
+                                                Konten
+                                                <svg class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+                                            </button>
+                                        </template>
+
+                                        <template #content>
+                                            <DropdownLink
+                                                v-for="kItem in kontenItems"
+                                                :key="kItem.route"
+                                                :href="route(kItem.route)"
+                                            >
+                                                <span class="flex items-center gap-2">
+                                                    <span class="h-1.5 w-1.5 rounded-full" :class="route().current(kItem.match) ? 'bg-blue-500' : 'bg-gray-300'"></span>
+                                                    {{ kItem.label }}
+                                                </span>
+                                            </DropdownLink>
+                                        </template>
+                                    </Dropdown>
+                                </div>
 
                                 <!-- Data Master Dropdown -->
                                 <div class="relative">
@@ -205,6 +248,24 @@ const isMasterActive = computed(() => {
                             >
                                 {{ item.label }}
                             </ResponsiveNavLink>
+
+                            <!-- Konten Group -->
+                            <div class="pt-3 pb-1 border-t border-white/10">
+                                <div class="px-4 text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                                    Konten
+                                </div>
+                                <div class="mt-1.5 space-y-1">
+                                    <ResponsiveNavLink
+                                        v-for="kItem in kontenItems"
+                                        :key="kItem.route"
+                                        :href="route(kItem.route)"
+                                        :active="route().current(kItem.match)"
+                                        class="pl-8"
+                                    >
+                                        {{ kItem.label }}
+                                    </ResponsiveNavLink>
+                                </div>
+                            </div>
 
                             <!-- Data Master Group -->
                             <div class="pt-3 pb-1 border-t border-white/10">

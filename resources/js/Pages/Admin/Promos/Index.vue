@@ -41,20 +41,20 @@ const closePreview = () => {
 </script>
 
 <template>
-    <Head title="Manajemen Artikel" />
+    <Head title="Manajemen Promo & Paket" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    Manajemen Artikel
+                    Manajemen Promo & Paket
                 </h2>
                 <Link
-                    :href="route('admin.articles.create')"
+                    :href="route('admin.promos.create')"
                     class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm"
                 >
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Tambah Artikel
+                    Tambah Promo
                 </Link>
             </div>
         </template>
@@ -65,7 +65,7 @@ const closePreview = () => {
                     <div class="p-6 text-gray-900">
                         <!-- Search Bar -->
                         <div class="mb-6">
-                            <SearchInput :model-value="filters?.search" route-name="admin.articles.index" placeholder="Cari judul atau isi artikel..." />
+                            <SearchInput :model-value="filters?.search" route-name="admin.promos.index" placeholder="Cari judul atau isi promo..." />
                         </div>
 
                         <!-- Articles Table -->
@@ -129,7 +129,7 @@ const closePreview = () => {
                                                 <button @click="openPreview(article)" class="text-teal-600 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 p-2 rounded-lg transition-colors" title="Preview">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                                 </button>
-                                                <Link :href="route('admin.articles.edit', article.id)" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors" title="Edit">
+                                                <Link :href="route('admin.promos.edit', article.id)" class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors" title="Edit">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                                 </Link>
                                                 <Link :href="route('admin.articles.destroy', article.id)" method="delete" as="button" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors" title="Hapus" onclick="return confirm('Yakin ingin menghapus artikel ini?')">
@@ -174,7 +174,7 @@ const closePreview = () => {
         <Modal :show="showModal" @close="closePreview" maxWidth="4xl">
             <div v-if="selectedArticle" class="p-6 flex flex-col h-[90vh]">
                 <div class="flex justify-between items-center mb-4 pb-4 shrink-0">
-                    <h3 class="text-xl font-bold text-gray-900">Preview Artikel</h3>
+                    <h3 class="text-xl font-bold text-gray-900">Preview Promo & Paket</h3>
                     
                     <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
                         <button @click="previewMode = 'desktop'" :class="{'bg-white shadow-sm text-gray-900': previewMode === 'desktop', 'text-gray-500 hover:text-gray-700': previewMode !== 'desktop'}" class="px-3 py-1.5 text-sm font-medium rounded-md flex items-center gap-2 transition-all">
@@ -206,22 +206,35 @@ const closePreview = () => {
                             <div class="prose max-w-none" :class="{'prose-sm': previewMode === 'mobile'}">
                                 <h1 class="font-bold mb-4" :class="previewMode === 'mobile' ? 'text-2xl' : 'text-3xl'">{{ selectedArticle.title }}</h1>
                                 
-                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-8 pb-4 border-b flex-wrap">
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-6 pb-4 border-b flex-wrap">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200">
                                         {{ selectedArticle.category?.name || 'Tanpa Kategori' }}
-                                    </span>
-                                    <span class="flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                        {{ selectedArticle.author?.name || 'Anonim' }}
                                     </span>
                                     <span class="flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         {{ selectedArticle.published_at ? formatDate(selectedArticle.published_at) : 'Draft' }}
                                     </span>
-                                    <span class="flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        {{ selectedArticle.reading_time }} menit baca
-                                    </span>
+                                </div>
+
+                                <div class="bg-amber-50 rounded-xl p-6 mb-8 border border-amber-100 shadow-sm" :class="{'p-4': previewMode === 'mobile'}">
+                                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div>
+                                            <h3 class="text-amber-900 font-semibold mb-1">Informasi Harga</h3>
+                                            <p class="text-amber-700 text-sm">Harga khusus untuk layanan ini</p>
+                                        </div>
+                                        <div :class="previewMode === 'mobile' ? 'text-left' : 'text-right'">
+                                            <div v-if="selectedArticle.promo_price" class="flex flex-col" :class="previewMode === 'mobile' ? 'items-start' : 'items-end'">
+                                                <span class="text-gray-400 line-through text-sm">Rp {{ new Intl.NumberFormat('id-ID').format(selectedArticle.price) }}</span>
+                                                <span class="font-bold text-amber-600" :class="previewMode === 'mobile' ? 'text-2xl' : 'text-3xl'">Rp {{ new Intl.NumberFormat('id-ID').format(selectedArticle.promo_price) }}</span>
+                                            </div>
+                                            <div v-else-if="selectedArticle.price" class="font-bold text-amber-600" :class="previewMode === 'mobile' ? 'text-2xl' : 'text-3xl'">
+                                                Rp {{ new Intl.NumberFormat('id-ID').format(selectedArticle.price) }}
+                                            </div>
+                                            <div v-else class="text-gray-500 italic">
+                                                Harga tidak tersedia
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div v-if="selectedArticle.cover_image" class="mb-8">

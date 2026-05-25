@@ -16,10 +16,18 @@ class FacilityResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'category' => $this->category,
+            'category' => $this->facilityCategory ? $this->facilityCategory->name : 'Lainnya',
             'name' => $this->name,
             'description' => $this->description,
+            'price_estimation' => $this->price_estimation,
+            'bed_capacity' => $this->bed_capacity,
             'features' => $this->features,
+            'photos' => $this->getMedia('facility_photos')->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'url' => $media->getUrl(),
+                ];
+            }),
         ];
     }
 }

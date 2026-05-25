@@ -7,13 +7,19 @@ use App\Http\Controllers\CenterOfExcellenceController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\InsurancePartnerController;
+use App\Http\Controllers\JobVacancyController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
+use App\Http\Controllers\Admin\PromoController as AdminPromoController;
 use App\Http\Controllers\Admin\CenterOfExcellenceController as AdminCoeController;
 use App\Http\Controllers\Admin\FacilityController as AdminFacilityController;
 use App\Http\Controllers\Admin\SpecialtyController as AdminSpecialtyController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\InsurancePartnerController as AdminInsurancePartnerController;
+use App\Http\Controllers\Admin\JobVacancyController as AdminJobVacancyController;
+use App\Http\Controllers\PackageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,18 +40,28 @@ Route::get('/halaman/{page:slug}', [PageController::class, 'show'])->name('pages
 Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
 
+Route::get('/paket-kesehatan', [PackageController::class, 'index'])->name('packages.index');
+Route::get('/paket-kesehatan/{package:slug}', [PackageController::class, 'show'])->name('packages.show');
+
+Route::get('/mitra-asuransi', [InsurancePartnerController::class, 'index'])->name('insurance-partners.index');
+Route::get('/karir', [JobVacancyController::class, 'index'])->name('careers.index');
+
 // Admin Routes
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     Route::resource('doctors', AdminDoctorController::class);
     Route::resource('articles', AdminArticleController::class);
-    Route::resource('article-categories', \App\Http\Controllers\Admin\ArticleCategoryController::class)->only(['store', 'destroy']);
+    Route::resource('promos', AdminPromoController::class);
+    Route::resource('article-categories', \App\Http\Controllers\Admin\ArticleCategoryController::class)->except(['create', 'show', 'edit']);
+    Route::resource('facility-categories', \App\Http\Controllers\Admin\FacilityCategoryController::class)->except(['create', 'show', 'edit']);
     Route::resource('coes', AdminCoeController::class)->parameters(['coes' => 'coe']);
     Route::resource('facilities', AdminFacilityController::class);
     Route::resource('specialties', AdminSpecialtyController::class)->except(['create', 'show', 'edit']);
     Route::resource('degrees', \App\Http\Controllers\Admin\DegreeController::class)->except(['create', 'show', 'edit']);
     Route::resource('pages', AdminPageController::class);
+    Route::resource('insurance-partners', AdminInsurancePartnerController::class)->parameters(['insurance-partners' => 'insurancePartner']);
+    Route::resource('job-vacancies', AdminJobVacancyController::class)->parameters(['job-vacancies' => 'jobVacancy']);
     
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');

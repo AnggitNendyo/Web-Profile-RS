@@ -9,12 +9,12 @@ use App\Models\ArticleCategory;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 
-class ArticleController extends Controller
+class PromoController extends Controller
 {
     public function index(Request $request)
     {
-        $articles = Article::with(['author', 'category'])
-            ->where('is_promo', false)
+        $promos = Article::with(['author', 'category'])
+            ->where('is_promo', true)
             ->when($request->search, function ($query, $search) {
                 $query->where(function($q) use ($search) {
                     $q->where('title', 'ilike', "%{$search}%")
@@ -25,15 +25,15 @@ class ArticleController extends Controller
             ->paginate(10)
             ->withQueryString();
         
-        return Inertia::render('Admin/Articles/Index', [
-            'articles' => $articles,
+        return Inertia::render('Admin/Promos/Index', [
+            'articles' => $promos,
             'filters' => ['search' => $request->search],
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Articles/Form', [
+        return Inertia::render('Admin/Promos/Form', [
             'categories' => ArticleCategory::orderBy('name')->get(),
         ]);
     }
@@ -49,32 +49,32 @@ class ArticleController extends Controller
             'category_id' => 'nullable|exists:article_categories,id',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:300',
+            'price' => 'nullable|integer|min:0',
+            'promo_price' => 'nullable|integer|min:0',
         ]);
 
-        $validated['is_promo'] = false;
-
+        $validated['is_promo'] = true;
         $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
         $validated['author_id'] = $request->user()->id;
 
-        // Auto-generate excerpt from content if not provided
         if (empty($validated['excerpt']) && !empty($validated['content'])) {
             $validated['excerpt'] = Str::limit(strip_tags($validated['content']), 160);
         }
 
         Article::create($validated);
 
-        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil dibuat.');
+        return redirect()->route('admin.promos.index')->with('success', 'Promo/Paket berhasil dibuat.');
     }
 
-    public function edit(Article $article)
+    public function edit(Article $promo)
     {
-        return Inertia::render('Admin/Articles/Form', [
-            'article' => $article->load('category'),
+        return Inertia::render('Admin/Promos/Form', [
+            'article' => $promo->load('category'),
             'categories' => ArticleCategory::orderBy('name')->get(),
         ]);
     }
 
-    public function update(Request $request, Article $article)
+    public function update(Request $request, Article $promo)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -85,28 +85,26 @@ class ArticleController extends Controller
             'category_id' => 'nullable|exists:article_categories,id',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:300',
+            'price' => 'nullable|integer|min:0',
+            'promo_price' => 'nullable|integer|min:0',
         ]);
 
-        $validated['is_promo'] = false;
-
-        if ($request->title !== $article->title) {
+        if ($request->title !== $promo->title) {
             $validated['slug'] = Str::slug($validated['title']) . '-' . uniqid();
         }
 
-        // Auto-generate excerpt from content if not provided
         if (empty($validated['excerpt']) && !empty($validated['content'])) {
             $validated['excerpt'] = Str::limit(strip_tags($validated['content']), 160);
         }
 
-        $article->update($validated);
+        $promo->update($validated);
 
-        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil diperbarui.');
+        return redirect()->route('admin.promos.index')->with('success', 'Promo/Paket berhasil diperbarui.');
     }
 
-    public function destroy(Article $article)
+    public function destroy(Article $promo)
     {
-        $article->delete();
-
-        return redirect()->route('admin.articles.index')->with('success', 'Artikel berhasil dihapus.');
+        $promo->delete();
+        return redirect()->route('admin.promos.index')->with('success', 'Promo/Paket berhasil dihapus.');
     }
 }
